@@ -1,5 +1,5 @@
 {
-  "name": "adbkit-apkutil",
+  "name": "adbkit-apkreader",
   "version": "0.0.0",
   "description": "APK utilities for adbkit.",
   "keywords": [
@@ -28,7 +28,9 @@
     "prepublish": "gulp prepublish --require coffee-script/register",
     "test": "gulp test --require coffee-script/register"
   },
-  "dependencies": {},
+  "dependencies": {
+    "adm-zip": "^0.4.4"
+  },
   "engines": {
     "node": ">= 0.10.4"
   },
