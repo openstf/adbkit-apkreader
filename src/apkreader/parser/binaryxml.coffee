@@ -22,47 +22,46 @@ class BinaryXmlParser
     SORTED: 1 << 0
     UTF8: 1 << 8
 
-  ResType =
-    # Contains no data.
-    NULL: 0x00
-    # The 'data' holds a ResTable_ref; a reference to another resource
-    # table entry.
-    REFERENCE: 0x01
-    # The 'data' holds an attribute resource identifier.
-    ATTRIBUTE: 0x02
-    # The 'data' holds an index into the containing resource table's
-    # global value string pool.
-    STRING: 0x03
-    # The 'data' holds a single-precision floating point number.
-    FLOAT: 0x04
-    # The 'data' holds a complex number encoding a dimension value;
-    # such as "100in".
-    DIMENSION: 0x05
-    # The 'data' holds a complex number encoding a fraction of a
-    # container.
-    FRACTION: 0x06
-    # Beginning of integer flavors...
-    FIRST_INT: 0x10
-    # The 'data' is a raw integer value of the form n..n.
-    INT_DEC: 0x10
-    # The 'data' is a raw integer value of the form 0xn..n.
-    INT_HEX: 0x11
-    # The 'data' is either 0 or 1; for input "false" or "true" respectively.
-    INT_BOOLEAN: 0x12
-    # Beginning of color integer flavors...
-    FIRST_COLOR_INT: 0x1c
-    # The 'data' is a raw integer value of the form #aarrggbb.
-    INT_COLOR_ARGB8: 0x1c
-    # The 'data' is a raw integer value of the form #rrggbb.
-    INT_COLOR_RGB8: 0x1d
-    # The 'data' is a raw integer value of the form #argb.
-    INT_COLOR_ARGB4: 0x1e
-    # The 'data' is a raw integer value of the form #rgb.
-    INT_COLOR_RGB4: 0x1f
-    # ...end of integer flavors.
-    LAST_COLOR_INT: 0x1f
-    # ...end of integer flavors.
-    LAST_INT: 0x1f
+  # Taken from android.util.TypedValue
+  TypedValue =
+    COMPLEX_MANTISSA_MASK: 0x00ffffff
+    COMPLEX_MANTISSA_SHIFT: 0x00000008
+    COMPLEX_RADIX_0p23: 0x00000003
+    COMPLEX_RADIX_16p7: 0x00000001
+    COMPLEX_RADIX_23p0: 0x00000000
+    COMPLEX_RADIX_8p15: 0x00000002
+    COMPLEX_RADIX_MASK: 0x00000003
+    COMPLEX_RADIX_SHIFT: 0x00000004
+    COMPLEX_UNIT_DIP: 0x00000001
+    COMPLEX_UNIT_FRACTION: 0x00000000
+    COMPLEX_UNIT_FRACTION_PARENT: 0x00000001
+    COMPLEX_UNIT_IN: 0x00000004
+    COMPLEX_UNIT_MASK: 0x0000000f
+    COMPLEX_UNIT_MM: 0x00000005
+    COMPLEX_UNIT_PT: 0x00000003
+    COMPLEX_UNIT_PX: 0x00000000
+    COMPLEX_UNIT_SHIFT: 0x00000000
+    COMPLEX_UNIT_SP: 0x00000002
+    DENSITY_DEFAULT: 0x00000000
+    DENSITY_NONE: 0x0000ffff
+    TYPE_ATTRIBUTE: 0x00000002
+    TYPE_DIMENSION: 0x00000005
+    TYPE_FIRST_COLOR_INT: 0x0000001c
+    TYPE_FIRST_INT: 0x00000010
+    TYPE_FLOAT: 0x00000004
+    TYPE_FRACTION: 0x00000006
+    TYPE_INT_BOOLEAN: 0x00000012
+    TYPE_INT_COLOR_ARGB4: 0x0000001e
+    TYPE_INT_COLOR_ARGB8: 0x0000001c
+    TYPE_INT_COLOR_RGB4: 0x0000001f
+    TYPE_INT_COLOR_RGB8: 0x0000001d
+    TYPE_INT_DEC: 0x00000010
+    TYPE_INT_HEX: 0x00000011
+    TYPE_LAST_COLOR_INT: 0x0000001f
+    TYPE_LAST_INT: 0x0000001f
+    TYPE_NULL: 0x00000000
+    TYPE_REFERENCE: 0x00000001
+    TYPE_STRING: 0x00000003
 
   constructor: (@buffer) ->
     @cursor = 0
@@ -105,6 +104,65 @@ class BinaryXmlParser
       len = (len & 0x7fff) << 15
       len += this.readU16()
     return len
+
+  readDimension: ->
+    dimension =
+      value: null
+      unit: null
+      rawUnit: null
+
+    value = this.readU32()
+    unit = dimension.value & 0xff
+
+    dimension.value = value >> 8
+    dimension.rawUnit = unit
+
+    switch unit
+      when TypedValue.COMPLEX_UNIT_MM
+        dimension.unit = 'mm'
+      when TypedValue.COMPLEX_UNIT_PX
+        dimension.unit = 'px'
+      when TypedValue.COMPLEX_UNIT_DIP
+        dimension.unit = 'dp'
+      when TypedValue.COMPLEX_UNIT_SP
+        dimension.unit = 'sp'
+      when TypedValue.COMPLEX_UNIT_PT
+        dimension.unit = 'pt'
+      when TypedValue.COMPLEX_UNIT_IN
+        dimension.unit = 'in'
+
+    return dimension
+
+  readFraction: ->
+    fraction =
+      value: null
+      type: null
+      rawType: null
+
+    value = this.readU32()
+    type = value & 0xf
+
+    fraction.value = this.convertIntToFloat value >> 4
+    fraction.rawType = type
+
+    switch type
+      when TypedValue.COMPLEX_UNIT_FRACTION
+        fraction.type = '%'
+      when TypedValue.COMPLEX_UNIT_FRACTION_PARENT
+        fraction.type = '%p'
+
+    return fraction
+
+  readHex24: ->
+    (this.readU32() & 0xffffff).toString 16
+
+  readHex32: ->
+    this.readU32().toString 16
+
+  convertIntToFloat: (int) ->
+    buf = new ArrayBuffer 4
+    new Int32Array(buf)[0] = buf
+    return new Float32Array(buf)[0]
 
   readString: (encoding) ->
     switch encoding
@@ -232,32 +290,28 @@ class BinaryXmlParser
     attr.dataType = dataType
 
     switch dataType
-      when ResType.INT_DEC, ResType.INT_HEX
+      when TypedValue.TYPE_INT_DEC, TypedValue.TYPE_INT_HEX
         attr.value = this.readU32()
-      when ResType.STRING
+      when TypedValue.TYPE_STRING
         ref = this.readS32()
         attr.value = @strings[ref] if ref > 0
-      when ResType.REFERENCE
+      when TypedValue.TYPE_REFERENCE
         id = this.readU32()
         attr.value = "res:#{id}"
-      when ResType.INT_BOOLEAN
+      when TypedValue.TYPE_INT_BOOLEAN
         attr.value = this.readS32() isnt 0
-      when ResType.NULL
+      when TypedValue.TYPE_NULL
         attr.value = null
-      when ResType.INT_COLOR_RGB8, ResType.INT_COLOR_RGB4
-        # problem
-        false
-      when ResType.INT_COLOR_ARGB8, ResType.INT_COLOR_ARGB4
-        # problem
-        false
-      when ResType.DIMENSION
-        # problem
-        false
-      when ResType.FRACTION
-        # problem
-        false
+      when TypedValue.TYPE_INT_COLOR_RGB8, TypedValue.TYPE_INT_COLOR_RGB4
+        attr.value = this.readHex24()
+      when TypedValue.TYPE_INT_COLOR_ARGB8, TypedValue.TYPE_INT_COLOR_ARGB4
+        attr.value = this.readHex32()
+      when TypedValue.TYPE_DIMENSION
+        attr.value = this.readDimension()
+      when TypedValue.TYPE_FRACTION
+        attr.value = this.readFraction()
       else
-        res.value = this.readU32()
+        attr.value = this.readU32()
 
     return attr
 
