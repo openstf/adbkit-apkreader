@@ -24,13 +24,23 @@
     "url": "https://github.com/CyberAgent/adbkit-apkutil.git"
   },
   "scripts": {
-    "postpublish": "grunt clean",
-    "prepublish": "grunt test coffee",
-    "test": "grunt test"
+    "postpublish": "gulp postpublish --require coffee-script/register",
+    "prepublish": "gulp prepublish --require coffee-script/register",
+    "test": "gulp test --require coffee-script/register"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "engines": {
     "node": ">= 0.10.4"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.7.1",
+    "sinon-chai": "~2.5.0",
+    "chai": "~1.9.1",
+    "sinon": "~1.9.0",
+    "mocha": "~1.18.2",
+    "gulp-mocha": "~0.4.1",
+    "gulp-clean": "~0.2.4",
+    "gulp-coffee": "~1.4.1",
+    "gulp": "~3.5.6"
   }
 }
