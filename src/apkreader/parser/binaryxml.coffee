@@ -1,5 +1,3 @@
-Zip = require 'adm-zip'
-
 # Heavily inspired by https://github.com/xiaxiaocao/apk-parser
 
 class BinaryXmlParser
