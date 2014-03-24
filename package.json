@@ -1,0 +1,36 @@
+{
+  "name": "adbkit-apkutil",
+  "version": "0.0.0",
+  "description": "APK utilities for adbkit.",
+  "keywords": [
+    "adb",
+    "adbkit",
+    "android",
+    "apk",
+    "manifest"
+  ],
+  "bugs": {
+    "url": "https://github.com/CyberAgent/adbkit-apkutil/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "CyberAgent, Inc.",
+    "email": "npm@cyberagent.co.jp",
+    "url": "http://www.cyberagent.co.jp/"
+  },
+  "main": "./index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CyberAgent/adbkit-apkutil.git"
+  },
+  "scripts": {
+    "postpublish": "grunt clean",
+    "prepublish": "grunt test coffee",
+    "test": "grunt test"
+  },
+  "dependencies": {
+  },
+  "engines": {
+    "node": ">= 0.10.4"
+  }
+}
