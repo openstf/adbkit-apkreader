@@ -159,6 +159,31 @@ class BinaryXmlParser
   readHex32: ->
     this.readU32().toString 16
 
+  readTypedValue: (dataType) ->
+    switch dataType
+      when TypedValue.TYPE_INT_DEC, TypedValue.TYPE_INT_HEX
+        this.readU32()
+      when TypedValue.TYPE_STRING
+        ref = this.readS32()
+        if ref > 0 then @strings[ref] else ''
+      when TypedValue.TYPE_REFERENCE
+        id = this.readU32()
+        "res:#{id}"
+      when TypedValue.TYPE_INT_BOOLEAN
+        this.readS32() isnt 0
+      when TypedValue.TYPE_NULL
+        null
+      when TypedValue.TYPE_INT_COLOR_RGB8, TypedValue.TYPE_INT_COLOR_RGB4
+        this.readHex24()
+      when TypedValue.TYPE_INT_COLOR_ARGB8, TypedValue.TYPE_INT_COLOR_ARGB4
+        this.readHex32()
+      when TypedValue.TYPE_DIMENSION
+        this.readDimension()
+      when TypedValue.TYPE_FRACTION
+        this.readFraction()
+      else
+        this.readU32()
+
   convertIntToFloat: (int) ->
     buf = new ArrayBuffer 4
     new Int32Array(buf)[0] = buf
@@ -286,32 +311,9 @@ class BinaryXmlParser
 
     attr.namespace = @strings[nsRef] if nsRef > 0
     attr.name = @strings[nameRef]
-    attr.rawValue = @strings[valueRef]
+    attr.rawValue = @strings[valueRef] if valueRef > 0
     attr.dataType = dataType
-
-    switch dataType
-      when TypedValue.TYPE_INT_DEC, TypedValue.TYPE_INT_HEX
-        attr.value = this.readU32()
-      when TypedValue.TYPE_STRING
-        ref = this.readS32()
-        attr.value = @strings[ref] if ref > 0
-      when TypedValue.TYPE_REFERENCE
-        id = this.readU32()
-        attr.value = "res:#{id}"
-      when TypedValue.TYPE_INT_BOOLEAN
-        attr.value = this.readS32() isnt 0
-      when TypedValue.TYPE_NULL
-        attr.value = null
-      when TypedValue.TYPE_INT_COLOR_RGB8, TypedValue.TYPE_INT_COLOR_RGB4
-        attr.value = this.readHex24()
-      when TypedValue.TYPE_INT_COLOR_ARGB8, TypedValue.TYPE_INT_COLOR_ARGB4
-        attr.value = this.readHex32()
-      when TypedValue.TYPE_DIMENSION
-        attr.value = this.readDimension()
-      when TypedValue.TYPE_FRACTION
-        attr.value = this.readFraction()
-      else
-        attr.value = this.readU32()
+    attr.value = this.readTypedValue dataType
 
     return attr
 
@@ -333,6 +335,21 @@ class BinaryXmlParser
     @parent = @stack[@stack.length - 1]
 
     return node
+
+  readXmlCData: (header) ->
+    cdata =
+      data: null
+      value: null
+
+    dataRef = this.readS32()
+    size = this.readU16()
+    zero = this.readU8()
+    dataType = this.readU8()
+
+    cdata.data = @strings[dataRef] if dataRef > 0
+    cdata.value = this.readTypedValue dataType
+
+    return cdata
 
   readNull: (header) ->
     @cursor += header.chunkSize - header.headerSize
