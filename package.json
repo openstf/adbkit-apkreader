@@ -11,7 +11,7 @@
     "AndroidManifest"
   ],
   "bugs": {
-    "url": "https://github.com/CyberAgent/adbkit-apkutil/issues"
+    "url": "https://github.com/CyberAgent/adbkit-apkreader/issues"
   },
   "license": "Apache-2.0",
   "author": {
@@ -22,7 +22,7 @@
   "main": "./index",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CyberAgent/adbkit-apkutil.git"
+    "url": "https://github.com/CyberAgent/adbkit-apkreader.git"
   },
   "scripts": {
     "postpublish": "gulp postpublish --require coffee-script/register",
