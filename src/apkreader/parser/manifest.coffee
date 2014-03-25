@@ -18,8 +18,8 @@ class ManifestParser
     target.intentFilters = []
     target.metaData = []
 
-    element.children.forEach (element) =>
-      switch element.name
+    element.childNodes.forEach (element) =>
+      switch element.nodeName
         when 'intent-filter'
           intentFilter = this.collapseAttributes element
 
@@ -27,8 +27,8 @@ class ManifestParser
           intentFilter.categories = []
           intentFilter.data = []
 
-          element.children.forEach (element) =>
-            switch element.name
+          element.childNodes.forEach (element) =>
+            switch element.nodeName
               when 'action'
                 intentFilter.actions.push this.collapseAttributes element
               when 'category'
@@ -51,8 +51,8 @@ class ManifestParser
     app.providers = []
     app.usesLibraries = []
 
-    element.children.forEach (element) =>
-      switch element.name
+    element.childNodes.forEach (element) =>
+      switch element.nodeName
         when 'activity'
           activity = this.collapseAttributes element
           this.parseIntents element, activity
@@ -80,8 +80,8 @@ class ManifestParser
           provider.metaData = []
           provider.pathPermissions = []
 
-          element.children.forEach (element) =>
-            switch element.name
+          element.childNodes.forEach (element) =>
+            switch element.nodeName
               when 'grant-uri-permission'
                 provider.grantUriPermissions.push \
                   this.collapseAttributes element
@@ -123,8 +123,8 @@ class ManifestParser
     manifest.supportsGlTextures = []
     manifest.application = Object.create null
 
-    document.children.forEach (element) =>
-      switch element.name
+    document.childNodes.forEach (element) =>
+      switch element.nodeName
         when 'uses-permission'
           manifest.usesPermissions.push this.collapseAttributes element
         when 'permission'
@@ -144,7 +144,7 @@ class ManifestParser
         when 'supports-screens'
           manifest.supportsScreens = this.collapseAttributes element
         when 'compatible-screens'
-          element.children.forEach (screen) =>
+          element.childNodes.forEach (screen) =>
             manifest.compatibleScreens.push this.collapseAttributes screen
         when 'supports-gl-texture'
           manifest.supportsGlTextures.push this.collapseAttributes element

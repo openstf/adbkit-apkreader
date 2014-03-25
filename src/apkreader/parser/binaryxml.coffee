@@ -5,6 +5,7 @@ debug = require('debug')('adb:apkreader:parser:binaryxml')
 class BinaryXmlParser
   NodeType =
     ELEMENT_NODE: 1
+    ATTRIBUTE_NODE: 2
     CDATA_SECTION_NODE: 4
 
   ChunkType =
@@ -307,8 +308,10 @@ class BinaryXmlParser
     # We don't currently care about the values, but they could
     # be accessed like so:
     #
-    # @namespace.prefix = @strings[prefixRef] if prefixRef > 0
-    # @namespace.uri = @strings[uriRef] if uriRef > 0
+    # @namespaceURI.prefix = @strings[prefixRef] if prefixRef > 0
+    # @namespaceURI.uri = @strings[uriRef] if uriRef > 0
+
+    return null
 
   readXmlNamespaceEnd: (header) ->
     line = this.readU32()
@@ -319,24 +322,26 @@ class BinaryXmlParser
     # We don't currently care about the values, but they could
     # be accessed like so:
     #
-    # @namespace.prefix = @strings[prefixRef] if prefixRef > 0
-    # @namespace.uri = @strings[uriRef] if uriRef > 0
+    # @namespaceURI.prefix = @strings[prefixRef] if prefixRef > 0
+    # @namespaceURI.uri = @strings[uriRef] if uriRef > 0
+
+    return null
 
   readXmlElementStart: (header) ->
     node =
+      namespaceURI: null
       nodeType: NodeType.ELEMENT_NODE
-      namespace: null
-      name: null
+      nodeName: null
       attributes: []
-      children: []
+      childNodes: []
 
     line = this.readU32()
     commentRef = this.readU32()
     nsRef = this.readS32()
     nameRef = this.readS32()
 
-    node.namespace = @strings[nsRef] if nsRef > 0
-    node.name = @strings[nameRef]
+    node.namespaceURI = @strings[nsRef] if nsRef > 0
+    node.nodeName = @strings[nameRef]
 
     attrStart = this.readU16()
     attrSize = this.readU16()
@@ -348,7 +353,7 @@ class BinaryXmlParser
     node.attributes.push this.readXmlAttribute() for [0...attrCount]
 
     if @document
-      @parent.children.push node
+      @parent.childNodes.push node
       @parent = node
     else
       @document = @parent = node
@@ -359,7 +364,9 @@ class BinaryXmlParser
 
   readXmlAttribute: ->
     attr =
-      namespace: null
+      namespaceURI: null
+      nodeType: NodeType.ATTRIBUTE_NODE
+      nodeName: null
       name: null
       rawValue: null
       typedValue: null
@@ -368,35 +375,29 @@ class BinaryXmlParser
     nameRef = this.readS32()
     valueRef = this.readS32()
 
-    attr.namespace = @strings[nsRef] if nsRef > 0
-    attr.name = @strings[nameRef]
+    attr.namespaceURI = @strings[nsRef] if nsRef > 0
+    attr.nodeName = attr.name = @strings[nameRef]
     attr.rawValue = @strings[valueRef] if valueRef > 0
     attr.typedValue = this.readTypedValue()
 
     return attr
 
   readXmlElementEnd: (header) ->
-    node =
-      namespace: null
-      name: null
-      attributes: []
-
     line = this.readU32()
     commentRef = this.readU32()
     nsRef = this.readS32()
     nameRef = this.readS32()
 
-    node.namespace = @strings[nsRef] if nsRef > 0
-    node.name = @strings[nameRef]
-
     @stack.pop()
     @parent = @stack[@stack.length - 1]
 
-    return node
+    return null
 
   readXmlCData: (header) ->
     cdata =
+      namespaceURI: null
       nodeType: NodeType.CDATA_SECTION_NODE
+      nodeName: '#cdata'
       data: null
       typedValue: null
 
@@ -407,12 +408,13 @@ class BinaryXmlParser
     cdata.data = @strings[dataRef] if dataRef > 0
     cdata.typedValue = this.readTypedValue()
 
-    @parent.children.push cdata
+    @parent.childNodes.push cdata
 
     return cdata
 
   readNull: (header) ->
     @cursor += header.chunkSize - header.headerSize
+    return null
 
   parse: ->
     xmlHeader = this.readChunkHeader()
