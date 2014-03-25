@@ -295,9 +295,12 @@ class BinaryXmlParser
     # Skip styles
     @cursor = anchor + header.chunkSize - header.headerSize
 
+    return null
+
   readResourceMap: (header) ->
     count = Math.floor (header.chunkSize - header.headerSize) / 4
     @resources.push this.readU32() for [0...count]
+    return null
 
   readXmlNamespaceStart: (header) ->
     line = this.readU32()
