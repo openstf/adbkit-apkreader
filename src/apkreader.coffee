@@ -1,5 +1,6 @@
 Zip = require 'adm-zip'
 
+ManifestParser = require './apkreader/parser/manifest'
 BinaryXmlParser = require './apkreader/parser/binaryxml'
 
 class ApkReader
@@ -10,7 +11,7 @@ class ApkReader
 
   readManifest: ->
     if manifest = @zip.getEntry MANIFEST
-      new BinaryXmlParser(manifest.getData()).parse()
+      new ManifestParser(manifest.getData()).parse()
     else
       throw new Error "APK does not contain '#{MANIFEST}'"
 
