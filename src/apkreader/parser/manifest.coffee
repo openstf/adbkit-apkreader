@@ -120,6 +120,8 @@ class ManifestParser
 
     manifest.usesPermissions = []
     manifest.permissions = []
+    manifest.permissionTrees = []
+    manifest.permissionGroups = []
     manifest.instrumentation = null
     manifest.usesSdk = null
     manifest.usesConfiguration = null
@@ -135,6 +137,10 @@ class ManifestParser
           manifest.usesPermissions.push this.collapseAttributes element
         when 'permission'
           manifest.permissions.push this.collapseAttributes element
+        when 'permission-tree'
+          manifest.permissionTrees.push this.collapseAttributes element
+        when 'permission-group'
+          manifest.permissionGroups.push this.collapseAttributes element
         when 'instrumentation'
           manifest.instrumentation = this.collapseAttributes element
         when 'uses-sdk'
