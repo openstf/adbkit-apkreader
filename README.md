@@ -16,8 +16,6 @@ Note that while adbkit-apkreader is written in CoffeeScript, it is compiled to J
 
 #### Read the `AndroidManifest.xml` of an APK
 
-##### JavaScript
-
 ```javascript
 var util = require('util')
 var ApkReader = require('adbkit-apkreader')
