@@ -181,10 +181,10 @@ class BinaryXmlParser
 
     switch dataType
       when TypedValue.TYPE_INT_DEC
-        typedValue.value = this.readU32()
+        typedValue.value = this.readS32()
         typedValue.type = 'int_dec'
       when TypedValue.TYPE_INT_HEX
-        typedValue.value = this.readU32()
+        typedValue.value = this.readS32()
         typedValue.type = 'int_hex'
       when TypedValue.TYPE_STRING
         ref = this.readS32()
