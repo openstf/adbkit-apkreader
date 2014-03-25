@@ -8,12 +8,6 @@ class ManifestParser
   constructor: (@buffer) ->
     @xmlParser = new BinaryXmlParser @buffer
 
-  getAttributeNS: (element, ns, name) ->
-    for attr in element.attributes
-      if attr.namespace is ns and attr.name is name
-        return attr
-    return null
-
   collapseAttributes: (element) ->
     collapsed = Object.create null
     for attr in element.attributes
@@ -107,9 +101,7 @@ class ManifestParser
     activity.intentFilters.some (filter) ->
       hasMain = filter.actions.some (action) ->
         action.name is INTENT_MAIN
-
       return false unless hasMain
-
       filter.categories.some (category) ->
         category.name is CATEGORY_LAUNCHER
 
