@@ -1,3 +1,5 @@
+debug = require('debug')('adb:apkreader:parser:binaryxml')
+
 # Heavily inspired by https://github.com/xiaxiaocao/apk-parser
 
 class BinaryXmlParser
@@ -159,30 +161,79 @@ class BinaryXmlParser
   readHex32: ->
     this.readU32().toString 16
 
-  readTypedValue: (dataType) ->
+  readTypedValue: ->
+    typedValue =
+      rawType: null
+      type: null
+      value: null
+
+    start = @cursor
+
+    size = this.readU16()
+    zero = this.readU8()
+    dataType = this.readU8()
+
+    typedValue.rawType = dataType
+
     switch dataType
-      when TypedValue.TYPE_INT_DEC, TypedValue.TYPE_INT_HEX
-        this.readU32()
+      when TypedValue.TYPE_INT_DEC
+        typedValue.value = this.readU32()
+        typedValue.type = 'int_dec'
+      when TypedValue.TYPE_INT_HEX
+        typedValue.value = this.readU32()
+        typedValue.type = 'int_hex'
       when TypedValue.TYPE_STRING
         ref = this.readS32()
-        if ref > 0 then @strings[ref] else ''
+        typedValue.value = if ref > 0 then @strings[ref] else ''
+        typedValue.type = 'string'
       when TypedValue.TYPE_REFERENCE
         id = this.readU32()
-        "res:#{id}"
+        typedValue.value = "res:#{id}"
+        typedValue.type = 'reference'
       when TypedValue.TYPE_INT_BOOLEAN
-        this.readS32() isnt 0
+        typedValue.value = this.readS32() isnt 0
+        typedValue.type = 'boolean'
       when TypedValue.TYPE_NULL
-        null
-      when TypedValue.TYPE_INT_COLOR_RGB8, TypedValue.TYPE_INT_COLOR_RGB4
-        this.readHex24()
-      when TypedValue.TYPE_INT_COLOR_ARGB8, TypedValue.TYPE_INT_COLOR_ARGB4
-        this.readHex32()
-      when TypedValue.TYPE_DIMENSION
-        this.readDimension()
-      when TypedValue.TYPE_FRACTION
-        this.readFraction()
-      else
         this.readU32()
+        typedValue.value = null
+        typedValue.type = 'null'
+      when TypedValue.TYPE_INT_COLOR_RGB8
+        typedValue.value = this.readHex24()
+        typedValue.type = 'rgb8'
+      when TypedValue.TYPE_INT_COLOR_RGB4
+        typedValue.value = this.readHex24()
+        typedValue.type = 'rgb4'
+      when TypedValue.TYPE_INT_COLOR_ARGB8
+        typedValue.value = this.readHex32()
+        typedValue.type = 'argb8'
+      when TypedValue.TYPE_INT_COLOR_ARGB4
+        typedValue.value = this.readHex32()
+        typedValue.type = 'argb4'
+      when TypedValue.TYPE_DIMENSION
+        typedValue.value = this.readDimension()
+        typedValue.type = 'dimension'
+      when TypedValue.TYPE_FRACTION
+        typedValue.value = this.readFraction()
+        typedValue.type = 'fraction'
+      else
+        type = dataType.toString 16
+        debug "Not sure what to do with typed value of type 0x#{type}, falling
+          back to reading an uint32"
+        typedValue.value = this.readU32()
+        typedValue.type = 'unknown'
+
+    # Ensure we consume the whole value
+    end = start + size
+    if @cursor isnt end
+      type = dataType.toString 16
+      diff = end - @cursor
+      debug "Cursor is off by #{diff} bytes at #{@cursor} at supposed end
+        of typed value of type 0x#{type}. The typed value started at offset
+        #{start} and is supposed to end at offset #{end}. Ignoring the rest
+        of the value."
+      @cursor = end
+
+    return typedValue
 
   convertIntToFloat: (int) ->
     buf = new ArrayBuffer 4
@@ -300,20 +351,16 @@ class BinaryXmlParser
       namespace: null
       name: null
       rawValue: null
-      value: null
+      typedValue: null
 
     nsRef = this.readS32()
     nameRef = this.readS32()
     valueRef = this.readS32()
-    size = this.readU16()
-    zero = this.readU8()
-    dataType = this.readU8()
 
     attr.namespace = @strings[nsRef] if nsRef > 0
     attr.name = @strings[nameRef]
     attr.rawValue = @strings[valueRef] if valueRef > 0
-    attr.dataType = dataType
-    attr.value = this.readTypedValue dataType
+    attr.typedValue = this.readTypedValue()
 
     return attr
 
@@ -339,15 +386,14 @@ class BinaryXmlParser
   readXmlCData: (header) ->
     cdata =
       data: null
-      value: null
+      typedValue: null
 
+    line = this.readU32()
+    commentRef = this.readU32()
     dataRef = this.readS32()
-    size = this.readU16()
-    zero = this.readU8()
-    dataType = this.readU8()
 
     cdata.data = @strings[dataRef] if dataRef > 0
-    cdata.value = this.readTypedValue dataType
+    cdata.typedValue = this.readTypedValue()
 
     return cdata
 
@@ -369,6 +415,7 @@ class BinaryXmlParser
       this.readXmlNamespaceStart resMapHeader
 
     while @cursor < @buffer.length
+      start = @cursor
       header = this.readChunkHeader()
       switch header.chunkType
         when ChunkType.XML_START_NAMESPACE
@@ -386,6 +433,18 @@ class BinaryXmlParser
           this.readNull header
         else
           throw new Error "Unsupported chunk type '#{header.chunkType}'"
+
+      # Ensure we consume the whole chunk
+      end = start + header.chunkSize
+      if @cursor isnt end
+        diff = end - @cursor
+        type = header.chunkType.toString 16
+        debug "Cursor is off by #{diff} bytes at #{@cursor} at supposed end
+          of chunk of type 0x#{type}. The chunk started at offset #{start}
+          and is supposed to end at offset #{end}. Ignoring the rest of the
+          chunk."
+        throw new Error 'stop'
+        @cursor = end
 
     return @document
 
