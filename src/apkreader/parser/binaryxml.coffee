@@ -188,7 +188,7 @@ class BinaryXmlParser
         typedValue.type = 'string'
       when TypedValue.TYPE_REFERENCE
         id = this.readU32()
-        typedValue.value = "res:#{id}"
+        typedValue.value = "resourceId:0x#{id.toString 16}"
         typedValue.type = 'reference'
       when TypedValue.TYPE_INT_BOOLEAN
         typedValue.value = this.readS32() isnt 0
