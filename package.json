@@ -1,13 +1,14 @@
 {
   "name": "adbkit-apkreader",
   "version": "0.0.0",
-  "description": "APK utilities for adbkit.",
+  "description": "Extracts information from APK files.",
   "keywords": [
     "adb",
     "adbkit",
     "android",
     "apk",
-    "manifest"
+    "manifest",
+    "AndroidManifest"
   ],
   "bugs": {
     "url": "https://github.com/CyberAgent/adbkit-apkutil/issues"
