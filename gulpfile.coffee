@@ -21,7 +21,7 @@ gulp.task 'compile-src', ->
     .pipe gulp.dest 'lib'
 
 gulp.task 'compile-main', ->
-  gulp.src '*.coffee'
+  gulp.src 'index.coffee'
     .pipe coffee()
     .pipe gulp.dest '.'
 
