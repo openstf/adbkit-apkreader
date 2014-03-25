@@ -126,6 +126,7 @@ class ManifestParser
     manifest.usesFeatures = []
     manifest.supportsScreens = null
     manifest.compatibleScreens = []
+    manifest.supportsGlTextures = []
     manifest.application = Object.create null
 
     document.children.forEach (element) =>
@@ -147,6 +148,8 @@ class ManifestParser
         when 'compatible-screens'
           element.children.forEach (screen) =>
             manifest.compatibleScreens.push this.collapseAttributes screen
+        when 'supports-gl-texture'
+          manifest.supportsGlTextures.push this.collapseAttributes element
         when 'application'
           manifest.application = this.parseApplication element
 
