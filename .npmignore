@@ -2,7 +2,7 @@
 /.npmignore
 /*.tgz
 /npm-debug.log
-/Gruntfile.coffee
+/gulpfile.coffee
 /index.coffee
 /CONTRIBUTING.md
 /src/
