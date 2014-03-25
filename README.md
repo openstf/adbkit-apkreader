@@ -106,22 +106,22 @@ Synchronously reads and parses the binary XML file at the given path inside the 
 * **path** The path to the binary XML file inside the APK. For example, giving `AndroidManifest.xml` as the path would parse the manifest (but you'll probably want to use `reader.readManifestSync()` instead).
 * Throws: `Error` (e.g. if parsing was unsuccessful)
 * Returns:  A JavaScript `Object` representation of the root node of the XML file. All nodes including the root node have the following properties:
-  - **namespaceURI** The namespace URI or `null` if none.
-  - **nodeType** `1` for element nodes, `2` for attribute nodes, and `4` for CData sections.
-  - **nodeName** The node name.
-  - For element nodes, the following additional properties are present:
-    * **attributes** An array of attribute nodes.
-    * **childNodes** An array of child nodes.
-  - For attribute nodes, the following additional properties are present:
-    * **name** The attribute name.
-    * **value** The attribute value, if possible to represent as a simple value.
-    * **typedValue** May be available when the attribute represents a complex value. See [android.util.TypedValue](http://developer.android.com/reference/android/util/TypedValue.html) for more information. Has the following properties:
-      - **value** The value, which might `null`, `String`, `Boolean`, `Number` or even an `Object` for the most complex types.
-      - **type** A `String` representation of the type of the value.
-      - **rawType** A raw integer presentation of the type of the value.
-  - For CData nodes, the following additional properties are present:
-    * **data** The CData.
-    * **typedValue** May be available if the section represents a more complex type. See above for details.
+    - **namespaceURI** The namespace URI or `null` if none.
+    - **nodeType** `1` for element nodes, `2` for attribute nodes, and `4` for CData sections.
+    - **nodeName** The node name.
+    - For element nodes, the following additional properties are present:
+        * **attributes** An array of attribute nodes.
+        * **childNodes** An array of child nodes.
+    - For attribute nodes, the following additional properties are present:
+        * **name** The attribute name.
+        * **value** The attribute value, if possible to represent as a simple value.
+        * **typedValue** May be available when the attribute represents a complex value. See [android.util.TypedValue](http://developer.android.com/reference/android/util/TypedValue.html) for more information. Has the following properties:
+            - **value** The value, which might `null`, `String`, `Boolean`, `Number` or even an `Object` for the most complex types.
+            - **type** A `String` representation of the type of the value.
+            - **rawType** A raw integer presentation of the type of the value.
+    - For CData nodes, the following additional properties are present:
+        * **data** The CData.
+        * **typedValue** May be available if the section represents a more complex type. See above for details.
 
 ## More information
 
