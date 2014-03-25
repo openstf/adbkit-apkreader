@@ -30,8 +30,8 @@
     "test": "gulp test --require coffee-script/register"
   },
   "dependencies": {
-    "adm-zip": "^0.4.4",
-    "debug": "^0.7.4"
+    "adm-zip": "~0.4.4",
+    "debug": "~0.7.4"
   },
   "engines": {
     "node": ">= 0.10.4"
