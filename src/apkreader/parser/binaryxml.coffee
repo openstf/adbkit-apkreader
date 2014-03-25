@@ -168,9 +168,9 @@ class BinaryXmlParser
 
   readTypedValue: ->
     typedValue =
-      rawType: null
-      type: null
       value: null
+      type: null
+      rawType: null
 
     start = @cursor
 
@@ -368,7 +368,7 @@ class BinaryXmlParser
       nodeType: NodeType.ATTRIBUTE_NODE
       nodeName: null
       name: null
-      rawValue: null
+      value: null
       typedValue: null
 
     nsRef = this.readS32()
@@ -377,7 +377,7 @@ class BinaryXmlParser
 
     attr.namespaceURI = @strings[nsRef] if nsRef > 0
     attr.nodeName = attr.name = @strings[nameRef]
-    attr.rawValue = @strings[valueRef] if valueRef > 0
+    attr.value = @strings[valueRef] if valueRef > 0
     attr.typedValue = this.readTypedValue()
 
     return attr
