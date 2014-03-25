@@ -3,6 +3,10 @@ debug = require('debug')('adb:apkreader:parser:binaryxml')
 # Heavily inspired by https://github.com/xiaxiaocao/apk-parser
 
 class BinaryXmlParser
+  NodeType =
+    ELEMENT_NODE: 1
+    CDATA_SECTION_NODE: 4
+
   ChunkType =
     NULL: 0x0000
     STRING_POOL: 0x0001
@@ -314,6 +318,7 @@ class BinaryXmlParser
 
   readXmlElementStart: (header) ->
     node =
+      nodeType: NodeType.ELEMENT_NODE
       namespace: null
       name: null
       attributes: []
@@ -385,6 +390,7 @@ class BinaryXmlParser
 
   readXmlCData: (header) ->
     cdata =
+      nodeType: NodeType.CDATA_SECTION_NODE
       data: null
       typedValue: null
 
@@ -394,6 +400,8 @@ class BinaryXmlParser
 
     cdata.data = @strings[dataRef] if dataRef > 0
     cdata.typedValue = this.readTypedValue()
+
+    @parent.children.push cdata
 
     return cdata
 
