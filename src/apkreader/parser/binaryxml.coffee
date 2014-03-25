@@ -250,13 +250,13 @@ class BinaryXmlParser
         stringLength = this.readLength8 encoding
         byteLength = this.readLength8 encoding
         value = @buffer.toString encoding, @cursor, @cursor += byteLength
-        @cursor += 2 # Skip trailing short zero
+        this.readU16() # Trailing zero
         return value
       when 'ucs2'
         stringLength = this.readLength16 encoding
         byteLength = stringLength * 2
         value = @buffer.toString encoding, @cursor, @cursor += byteLength
-        @cursor += 2 # Skip trailing short zero
+        this.readU16() # Trailing zero
         return value
       else
         throw new Error "Unsupported encoding '#{encoding}'"
@@ -304,6 +304,9 @@ class BinaryXmlParser
     prefixRef = this.readS32()
     uriRef = this.readS32()
 
+    # We don't currently care about the values, but they could
+    # be accessed like so:
+    #
     # @namespace.prefix = @strings[prefixRef] if prefixRef > 0
     # @namespace.uri = @strings[uriRef] if uriRef > 0
 
@@ -313,6 +316,9 @@ class BinaryXmlParser
     prefixRef = this.readS32()
     uriRef = this.readS32()
 
+    # We don't currently care about the values, but they could
+    # be accessed like so:
+    #
     # @namespace.prefix = @strings[prefixRef] if prefixRef > 0
     # @namespace.uri = @strings[uriRef] if uriRef > 0
 
@@ -428,7 +434,6 @@ class BinaryXmlParser
       switch header.chunkType
         when ChunkType.XML_START_NAMESPACE
           this.readXmlNamespaceStart header
-          #throw new Error 'Multiple namespaces'
         when ChunkType.XML_END_NAMESPACE
           this.readXmlNamespaceEnd header
         when ChunkType.XML_START_ELEMENT
@@ -451,7 +456,6 @@ class BinaryXmlParser
           of chunk of type 0x#{type}. The chunk started at offset #{start}
           and is supposed to end at offset #{end}. Ignoring the rest of the
           chunk."
-        throw new Error 'stop'
         @cursor = end
 
     return @document
