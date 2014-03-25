@@ -6,16 +6,25 @@ BinaryXmlParser = require './apkreader/parser/binaryxml'
 class ApkReader
   MANIFEST = 'AndroidManifest.xml'
 
-  constructor: (@apk) ->
-    @zip = new Zip @apk
+  @readFile: (apk) ->
+    new ApkReader apk
 
-  readManifest: ->
+  constructor: (@apk) ->
+    try
+      @zip = new Zip @apk
+    catch err
+      if typeof err is 'string'
+        throw new Error err
+      else
+        throw err
+
+  readManifestSync: ->
     if manifest = @zip.getEntry MANIFEST
       new ManifestParser(manifest.getData()).parse()
     else
       throw new Error "APK does not contain '#{MANIFEST}'"
 
-  readXml: (path) ->
+  readXmlSync: (path) ->
     if file = @zip.getEntry path
       new BinaryXmlParser(file.getData()).parse()
     else
