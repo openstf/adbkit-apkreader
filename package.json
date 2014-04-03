@@ -1,0 +1,51 @@
+{
+  "name": "adbkit-apkreader",
+  "version": "1.0.0",
+  "description": "Extracts information from APK files.",
+  "keywords": [
+    "adb",
+    "adbkit",
+    "android",
+    "apk",
+    "manifest",
+    "AndroidManifest"
+  ],
+  "bugs": {
+    "url": "https://github.com/CyberAgent/adbkit-apkreader/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "CyberAgent, Inc.",
+    "email": "npm@cyberagent.co.jp",
+    "url": "http://www.cyberagent.co.jp/"
+  },
+  "main": "./index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CyberAgent/adbkit-apkreader.git"
+  },
+  "scripts": {
+    "postpublish": "gulp postpublish --require coffee-script/register",
+    "prepublish": "gulp prepublish --require coffee-script/register",
+    "test": "gulp test --require coffee-script/register"
+  },
+  "dependencies": {
+    "adm-zip": "~0.4.4",
+    "debug": "~0.7.4"
+  },
+  "engines": {
+    "node": ">= 0.10.4"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.7.1",
+    "sinon-chai": "~2.5.0",
+    "chai": "~1.9.1",
+    "sinon": "~1.9.0",
+    "mocha": "~1.18.2",
+    "gulp-mocha": "~0.4.1",
+    "gulp-clean": "~0.2.4",
+    "gulp-coffee": "~1.4.1",
+    "gulp": "~3.5.6",
+    "gulp-jsonlint": "0.0.3"
+  }
+}

@@ -1,0 +1,14 @@
+/.editorconfig
+/.npmignore
+/*.tgz
+/npm-debug.log
+/gulpfile.coffee
+/index.coffee
+/CONTRIBUTING.md
+/src/
+/test/
+/bench/
+/tasks/
+/temp/
+/git_hooks/
+*.!sync
