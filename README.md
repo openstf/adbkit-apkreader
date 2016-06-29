@@ -121,6 +121,17 @@ Synchronously reads and parses the binary XML file at the given path inside the 
         * **data** The CData.
         * **typedValue** May be available if the section represents a more complex type. See above for details.
 
+#### reader.readArchitectureInfo()
+
+Synchronously reads the apk directory structure and retrieves a list of supported architectures
+
+* Returns: A javascript `Array` with supported architectures
+
+```javascript
+[ 'x86', 'armeabi', 'armeabi-v7a', 'mips' ]
+```
+
+
 ## More information
 
 * [android.util.TypedValue](http://developer.android.com/reference/android/util/TypedValue.html) For more information about value types.
