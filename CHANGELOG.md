@@ -1,6 +1,6 @@
 # Changelog
 
-## HEAD
+## 2.0.0 (2017-01-24)
 
 ### Breaking changes
 
