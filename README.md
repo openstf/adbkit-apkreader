@@ -17,41 +17,32 @@ Note that while adbkit-apkreader is written in CoffeeScript, it is compiled to J
 #### Read the `AndroidManifest.xml` of an APK
 
 ```javascript
-var util = require('util')
-var ApkReader = require('adbkit-apkreader')
+const util = require('util')
+const ApkReader = require('adbkit-apkreader')
 
-var reader = ApkReader.readFile('HelloApp.apk')
-var manifest = reader.readManifestSync()
-
-console.log(util.inspect(manifest, { depth: null }))
+ApkReader.open('HelloApp.apk')
+  .then(reader => reader.readManifest())
+  .then(manifest => console.log(util.inspect(manifest, { depth: null })))
 ```
 
 ## API
 
 ### ApkReader
 
-#### ApkReader.readFile(file)
+#### ApkReader.open(file)
 
 Alternate syntax to manually creating an ApkReader instance. Currently, only files are supported, but support for streams might be added at some point.
 
-* **file** The path to the APK file.
-* Throws: `Error` on error (e.g. if the file is not valid)
-* Returns: An `ApkReader` instance.
-
-#### constructor(file)
-
-Manually construct an `ApkReader` instance. Useful for testing and/or playing around. Normally you would use `ApkReader.readFile(file)` to create the instance.
+Note that currently this method cannot reject as the file is opened lazily, but this may change in the future and therefore returns a Promise for fewer future compatibility issues. On a related node, calling the constructor directly is still possible, but discouraged.
 
 * **file** The path to the APK file.
-* Throws: `Error` on error (e.g. if the file is not valid)
-* Returns: N/A
+* Returns: A `Promise` that resolves with an `ApkReader` instance.
 
-#### reader.readManifestSync()
+#### reader.readManifest()
 
-Synchronously reads and parses the `AndroidManifest.xml` file inside the APK and returns a simplified object representation of it.
+Reads and parses the `AndroidManifest.xml` file inside the APK and returns a simplified object representation of it.
 
-* Throws: `Error` (e.g. if parsing was unsuccessful)
-* Returns: A JavaScript `Object` representation of the manifest. See example output below:
+* Returns: A `Promise` that resolves with a JavaScript `Object` representation of the manifest. See example output below. Rejects on error (e.g. if parsing was unsuccessful).
 
 ```javascript
 { versionCode: 1,
@@ -97,13 +88,12 @@ Synchronously reads and parses the `AndroidManifest.xml` file inside the APK and
      usesLibraries: [] } }
 ```
 
-#### reader.readXmlSync(path)
+#### reader.readXml(path)
 
-Synchronously reads and parses the binary XML file at the given path inside the APK file. Attempts to be somewhat compatible with the DOM API.
+Reads and parses the binary XML file at the given path inside the APK file. Attempts to be somewhat compatible with the DOM API.
 
 * **path** The path to the binary XML file inside the APK. For example, giving `AndroidManifest.xml` as the path would parse the manifest (but you'll probably want to use `reader.readManifestSync()` instead).
-* Throws: `Error` (e.g. if parsing was unsuccessful)
-* Returns:  A JavaScript `Object` representation of the root node of the XML file. All nodes including the root node have the following properties:
+* Returns: A `Promise` that resolves with a JavaScript `Object` representation of the root node of the XML file. All nodes including the root node have the properties listed below. Rejects on error (e.g. if parsing was unsuccessful).
     - **namespaceURI** The namespace URI or `null` if none.
     - **nodeType** `1` for element nodes, `2` for attribute nodes, and `4` for CData sections.
     - **nodeName** The node name.

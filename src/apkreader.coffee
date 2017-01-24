@@ -1,4 +1,5 @@
-Zip = require 'adm-zip'
+Zip = require 'yauzl'
+Promise = require 'bluebird'
 
 ManifestParser = require './apkreader/parser/manifest'
 BinaryXmlParser = require './apkreader/parser/binaryxml'
@@ -6,28 +7,62 @@ BinaryXmlParser = require './apkreader/parser/binaryxml'
 class ApkReader
   MANIFEST = 'AndroidManifest.xml'
 
-  @readFile: (apk) ->
-    new ApkReader apk
+  @open: (apk) ->
+    Promise.resolve new ApkReader apk
 
   constructor: (@apk) ->
-    try
-      @zip = new Zip @apk
-    catch err
-      if typeof err is 'string'
-        throw new Error err
-      else
-        throw err
 
-  readManifestSync: ->
-    if manifest = @zip.getEntry MANIFEST
-      new ManifestParser(manifest.getData()).parse()
-    else
-      throw new Error "APK does not contain '#{MANIFEST}'"
+  _open: ->
+    Promise.fromCallback (callback) =>
+      Zip.open @apk, lazyEntries: true, callback
 
-  readXmlSync: (path) ->
-    if file = @zip.getEntry path
-      new BinaryXmlParser(file.getData()).parse()
-    else
-      throw new Error "APK does not contain '#{path}'"
+  usingFile: (file, action) ->
+    this.usingFileStream file, (stream) ->
+      endListener = errorListener = readableListener = undefined
+      new Promise (resolve, reject) ->
+        chunks = []
+        totalLength = 0
+        tryRead = ->
+          while chunk = stream.read()
+            chunks.push chunk
+            totalLength += chunk.length
+          return
+        stream.on 'readable', readableListener = -> tryRead()
+        stream.on 'error', errorListener = (err) -> reject err
+        stream.on 'end', endListener = -> resolve Buffer.concat(chunks, totalLength)
+      .then action
+      .finally ->
+        stream.removeListener 'readable', readableListener
+        stream.removeListener 'error', errorListener
+        stream.removeListener 'end', endListener
+
+  usingFileStream: (file, action) ->
+    this._open().then (zipfile) ->
+      endListener = errorListener = entryListener = undefined
+      new Promise (resolve, reject) ->
+        zipfile.on 'entry', entryListener = (entry) ->
+          if entry.fileName is MANIFEST
+            resolve Promise.fromCallback (callback) ->
+              zipfile.openReadStream entry, callback
+          else
+            zipfile.readEntry()
+        zipfile.on 'end', endListener = ->
+          reject new Error "APK does not contain '#{file}'"
+        zipfile.on 'error', errorListener = (err) -> reject err
+        zipfile.readEntry()
+      .then action
+      .finally ->
+        zipfile.removeListener 'entry', entryListener
+        zipfile.removeListener 'error', errorListener
+        zipfile.removeListener 'end', endListener
+        zipfile.close()
+
+  readManifest: ->
+    this.usingFile MANIFEST, (content) ->
+      new ManifestParser(content).parse()
+
+  readXml: (path) ->
+    this.usingFile path, (content) ->
+      new BinaryXmlParser(content).parse()
 
 module.exports = ApkReader
