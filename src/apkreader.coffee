@@ -41,7 +41,7 @@ class ApkReader
       endListener = errorListener = entryListener = undefined
       new Promise (resolve, reject) ->
         zipfile.on 'entry', entryListener = (entry) ->
-          if entry.fileName is MANIFEST
+          if entry.fileName is file
             resolve Promise.fromCallback (callback) ->
               zipfile.openReadStream entry, callback
           else
