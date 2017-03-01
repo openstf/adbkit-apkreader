@@ -5,7 +5,7 @@ ManifestParser = require './apkreader/parser/manifest'
 BinaryXmlParser = require './apkreader/parser/binaryxml'
 
 class ApkReader
-  MANIFEST = 'AndroidManifest.xml'
+  @MANIFEST = 'AndroidManifest.xml'
 
   @open: (apk) ->
     Promise.resolve new ApkReader apk
@@ -56,16 +56,13 @@ class ApkReader
         zipfile.removeListener 'error', errorListener
         zipfile.removeListener 'end', endListener
         zipfile.close()
-        
+
   readContent: (path) ->
     this.usingFile path, (content) -> content
 
   readManifest: ->
-    this.usingFile MANIFEST, (content) ->
+    this.usingFile ApkReader.MANIFEST, (content) ->
       new ManifestParser(content).parse()
-      
-  readManifestContent: ->
-    this.usingFile MANIFEST, (content) -> content
 
   readXml: (path) ->
     this.usingFile path, (content) ->
