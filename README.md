@@ -29,6 +29,10 @@ ApkReader.open('HelloApp.apk')
 
 ### ApkReader
 
+#### ApkReader.MANIFEST
+
+A convenience constant with the value `'AndroidManifest.xml'`. Can use useful with other API methods in certain circumstances.
+
 #### ApkReader.open(file)
 
 Alternate syntax to manually creating an ApkReader instance. Currently, only files are supported, but support for streams might be added at some point.
@@ -37,6 +41,13 @@ Note that currently this method cannot reject as the file is opened lazily, but 
 
 * **file** The path to the APK file.
 * Returns: A `Promise` that resolves with an `ApkReader` instance.
+
+#### reader.readContent(path)
+
+Reads the content of the given file inside the APK.
+
+* **path** The path to the file. For example, giving `'META-INF/MANIFEST.MF'` as the path would read the content of that file.
+* Returns: A `Promise` that resolves with a `Buffer` containing the full content of the file.
 
 #### reader.readManifest()
 
@@ -92,7 +103,7 @@ Reads and parses the `AndroidManifest.xml` file inside the APK and returns a sim
 
 Reads and parses the binary XML file at the given path inside the APK file. Attempts to be somewhat compatible with the DOM API.
 
-* **path** The path to the binary XML file inside the APK. For example, giving `AndroidManifest.xml` as the path would parse the manifest (but you'll probably want to use `reader.readManifestSync()` instead).
+* **path** The path to the binary XML file inside the APK. For example, giving `'AndroidManifest.xml'` as the path would parse the manifest (but you'll probably want to use `reader.readManifest()` instead).
 * Returns: A `Promise` that resolves with a JavaScript `Object` representation of the root node of the XML file. All nodes including the root node have the properties listed below. Rejects on error (e.g. if parsing was unsuccessful).
     - **namespaceURI** The namespace URI or `null` if none.
     - **nodeType** `1` for element nodes, `2` for attribute nodes, and `4` for CData sections.
@@ -110,6 +121,15 @@ Reads and parses the binary XML file at the given path inside the APK file. Atte
     - For CData nodes, the following additional properties are present:
         * **data** The CData.
         * **typedValue** May be available if the section represents a more complex type. See above for details.
+
+#### reader.usingFileStream(path, action)
+
+Opens a readable Stream to the given file inside the APK and runs the given action with it. The APK file is kept open while the action runs, allowing you to process the stream. Once the action finishes, the APK will be automatically closed.
+
+* **path** The path to the file. For example, giving `'META-INF/MANIFEST.MF'` as the path would open that file.
+* **action(stream)** A function that processes the stream somehow. **MUST** return a `Promise` that resolves when you're done processing the stream. The value that the `Promise` resolves with will also be the value that `usingFileStream()` resolves with.
+    - **stream** A readable Stream of the file content. You should either consume or end the stream yourself before resolving the action.
+* Returns: A `Promise` that resolves with whatever `action` resolves with.
 
 ## More information
 

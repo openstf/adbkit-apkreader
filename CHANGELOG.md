@@ -1,5 +1,16 @@
 # Changelog
 
+## HEAD
+
+### Enhancements
+
+* Added `readContent(path)` to read the raw content of any file. Thanks @LegNeato!
+* Exposed `usingFileStream(path, action)` that allows you to consume the contents of a file as a Stream. Useful for very large files.
+
+### Fixes
+
+* `readXml(path)` was unable to read any other file than `AndroidManifest.xml` due to an oversight. You can now read any file with it.
+
 ## 2.0.0 (2017-01-24)
 
 ### Breaking changes
