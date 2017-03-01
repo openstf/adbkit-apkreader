@@ -56,10 +56,16 @@ class ApkReader
         zipfile.removeListener 'error', errorListener
         zipfile.removeListener 'end', endListener
         zipfile.close()
+        
+  readContent: (path) ->
+    this.usingFile path, (content) -> content
 
   readManifest: ->
     this.usingFile MANIFEST, (content) ->
       new ManifestParser(content).parse()
+      
+  readManifestContent: ->
+    this.usingFile MANIFEST, (content) -> content
 
   readXml: (path) ->
     this.usingFile path, (content) ->
