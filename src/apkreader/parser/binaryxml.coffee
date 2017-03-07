@@ -178,6 +178,9 @@ class BinaryXmlParser
     zero = this.readU8()
     dataType = this.readU8()
 
+    # Yes, there has been a real world APK where the size is malformed.
+    size = 8 if size is 0
+
     typedValue.rawType = dataType
 
     switch dataType

@@ -1,5 +1,11 @@
 # Changelog
 
+## HEAD
+
+### Enhancements
+
+* Fixed a `readManifest()` parsing issue with slightly malformed manifests.
+
 ## 2.1.0 (2017-03-01)
 
 ### Enhancements
