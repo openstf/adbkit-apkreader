@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2 (2017-08-21)
+
+### Fixes
+
+* Fixed a `RangeError: Index out of range` error when parsing newer APKs that use UTF-8 encoding for their string pools. Thanks to @headshot289 and @mingyuan-xia for providing samples that helped isolate the issue.
+
 ## 2.1.1 (2017-03-07)
 
 ### Enhancements
