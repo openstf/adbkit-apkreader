@@ -254,7 +254,7 @@ class BinaryXmlParser
         stringLength = this.readLength8 encoding
         byteLength = this.readLength8 encoding
         value = @buffer.toString encoding, @cursor, @cursor += byteLength
-        this.readU16() # Trailing zero
+        this.readU8() # Trailing zero
         return value
       when 'ucs2'
         stringLength = this.readLength16 encoding
