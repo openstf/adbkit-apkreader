@@ -1,6 +1,6 @@
 # Changelog
 
-## HEAD
+## 3.0.0 (2017-09-21)
 
 ### Enhancements
 
