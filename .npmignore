@@ -1,5 +1,6 @@
 *.!sync
 /.editorconfig
+/.eslintrc.js
 /.npmignore
 /*.tgz
 /bench/
