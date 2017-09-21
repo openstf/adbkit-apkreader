@@ -2,6 +2,10 @@
 
 **adbkit-apkreader** provides a [Node.js](http://nodejs.org/) API for extracting information from Android APK files. For example, it allows you to read the `AndroidManifest.xml` of an existing APK file.
 
+## Requirements
+
+* [Node.js](http://nodejs.org/) 4.x or newer. Older versions are not supported.
+
 ## Getting started
 
 Install via NPM:
@@ -9,8 +13,6 @@ Install via NPM:
 ```bash
 npm install --save adbkit-apkreader
 ```
-
-Note that while adbkit-apkreader is written in CoffeeScript, it is compiled to JavaScript before being published to NPM, which means that you are not required to use CoffeeScript.
 
 ### Examples
 
@@ -47,7 +49,7 @@ Note that currently this method cannot reject as the file is opened lazily, but 
 Reads the content of the given file inside the APK.
 
 * **path** The path to the file. For example, giving `'META-INF/MANIFEST.MF'` as the path would read the content of that file.
-* Returns: A `Promise` that resolves with a `Buffer` containing the full content of the file.
+* Returns: A `Promise` that resolves with a `Buffer` containing the full contents of the file.
 
 #### reader.readManifest()
 

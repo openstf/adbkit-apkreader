@@ -1,5 +1,15 @@
 # Changelog
 
+## HEAD
+
+### Enhancements
+
+* Got rid of CoffeeScript.
+
+### Breaking changes
+
+* Dropped support for older Node.js versions. You need at least 4.x or newer now.
+
 ## 2.1.2 (2017-08-21)
 
 ### Fixes
