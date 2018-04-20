@@ -1,5 +1,11 @@
 # Changelog
 
+## HEAD
+
+### Fixes
+
+* Fixed parsing of long strings. Thanks @mingyuan-xia!
+
 ## 3.0.0 (2017-09-21)
 
 ### Enhancements
