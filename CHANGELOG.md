@@ -1,5 +1,11 @@
 # Changelog
 
+## HEAD
+
+### Fixes
+
+* Fixed parsing of Chrome 68 Beta APK and other similar APKs with a missing XML namespace. Thanks @zr0827!
+
 ## 3.0.1 (2018-04-20)
 
 ### Fixes
