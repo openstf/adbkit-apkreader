@@ -1,6 +1,6 @@
 # Changelog
 
-## HEAD
+## 3.0.2 (2018-07-11)
 
 ### Fixes
 
