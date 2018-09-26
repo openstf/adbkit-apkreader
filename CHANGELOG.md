@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.1.0 (2018-09-27)
+
+### Fixes
+
+* Fixed parsing of certain APKs that deduplicate items in the string pool.
+
+### Enhancements
+
+* Optional structured debug output can be enabled by passing `debug: true` to `.readManifest()` or `.readXml()`.
+
 ## 3.0.2 (2018-07-11)
 
 ### Fixes
