@@ -1,5 +1,11 @@
 # Changelog
 
+## HEAD
+
+### Fixes
+
+* Fixed manifest parsing on applications processed by 360 encryption services, which changes the `application` key to `com.stub.StubApp`. Thanks @JChord!
+
 ## 3.1.0 (2018-09-27)
 
 ### Fixes
