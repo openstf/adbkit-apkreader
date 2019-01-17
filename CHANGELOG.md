@@ -1,6 +1,6 @@
 # Changelog
 
-## HEAD
+## 3.1.2 (2019-01-18)
 
 ### Fixes
 
