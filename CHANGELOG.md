@@ -1,5 +1,11 @@
 # Changelog
 
+## HEAD
+
+### Fixes
+
+* Fixed a file reference leak when a ZIP-related error was encountered when reading an APK file. Thanks @harlentan!
+
 ## 3.1.1 (2018-11-11)
 
 ### Fixes
