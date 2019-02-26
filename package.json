@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "bluebird": "^3.4.7",
-    "debug": "~0.7.4",
     "yauzl": "^2.7.0"
   },
   "engines": {
