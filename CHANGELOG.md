@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2.0 (2020-02-06)
+
+### Fixes
+
+* Updated dependencies
+
 ## 3.1.2 (2019-01-18)
 
 ### Fixes
