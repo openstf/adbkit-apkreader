@@ -1,8 +1,10 @@
-# adbkit-apkreader
-
 # Warning
 
-This repository was superseded by https://github.com/DeviceFarmer/adbkit-apkreader
+# This project along with other ones in [OpenSTF](https://github.com/openstf) organisation is provided as is for community, without active development.
+# You can check any other forks that may be actively developed and offer new/different features [here](https://github.com/openstf/stf/network).
+# Active development has been moved to [DeviceFarmer](https://github.com/DeviceFarmer) organisation.
+
+# adbkit-apkreader
 
 **adbkit-apkreader** provides a [Node.js](http://nodejs.org/) API for extracting information from Android APK files. For example, it allows you to read the `AndroidManifest.xml` of an existing APK file.
 
