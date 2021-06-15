@@ -15,6 +15,7 @@
   },
   "license": "Apache-2.0",
   "main": "./index",
+  "typings": "./types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/openstf/adbkit-apkreader.git"
