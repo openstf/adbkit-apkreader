@@ -54,7 +54,8 @@
     "/lib/**/*.d.ts",
     "/index.js",
     "/index.d.ts",
-    "/CHANGELOG.md"
+    "/CHANGELOG.md",
+    "/NOTICE"
   ],
   "types": "./index.d.ts",
   "overrides": {
